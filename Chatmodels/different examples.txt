@@ -1,0 +1,93 @@
+import os
+from dotenv import load_dotenv
+
+# 1. Loading all necessary LangChain Model Connectors
+from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
+from langchain_nvidia_ai_endpoints import ChatNVIDIA
+
+# Load all hidden API Keys from the local .env file into system RAM
+load_dotenv()
+
+user_prompt = "Explain the concept of LangChain in one short sentence."
+
+print("--- STARTING MULTI-PROVIDER INFERENCE DEMO ---\n")
+
+# =====================================================================
+#  PROVIDER 1: GROQ INFERENCE ENGINE (Using Open-Weight Models)
+# =====================================================================
+try:
+    print("[Groq API Called...]")
+    groq_model = ChatGroq(
+        # Note: API Key can be automatically auto-detected from RAM if named GROQ_API_KEY
+        api_key=os.getenv("GROQ_API_KEY"),
+        model_name="openai/gpt-oss-120b"
+    )
+    groq_response = groq_model.invoke(user_prompt)
+    print(f"Groq Answer: {groq_response.content}\n")
+except Exception as e:
+    print(f"Groq Setup Error: {e}\n")
+
+
+# =====================================================================
+#  PROVIDER 2: NVIDIA NIM (NVIDIA AI Endpoints - 100+ Free Models)
+# =====================================================================
+try:
+    print("[NVIDIA NIM API Called...]")
+    nvidia_model = ChatNVIDIA(
+        api_key=os.getenv("NVIDIA_API_KEY"),
+        model="nvidia/llama-3.1-405b-instruct" # Highly powerful open model hosted by Nvidia
+    )
+    nvidia_response = nvidia_model.invoke(user_prompt)
+    print(f"NVIDIA Answer: {nvidia_response.content}\n")
+except Exception as e:
+    print(f"NVIDIA Setup Error: {e}\n")
+
+
+# =====================================================================
+#  PROVIDER 3: GOOGLE GEMINI (Google AI Studio)
+# =====================================================================
+try:
+    print("[Google Gemini API Called...]")
+    gemini_model = ChatGoogleGenerativeAI(
+        api_key=os.getenv("GOOGLE_API_KEY"),
+        model="gemini-1.5-flash"
+    )
+    gemini_response = gemini_model.invoke(user_prompt)
+    print(f"Gemini Answer: {gemini_response.content}\n")
+except Exception as e:
+    print(f"Gemini Setup Error: {e}\n")
+
+
+# =====================================================================
+#  PROVIDER 4: ANTHROPIC CLAUDE (Premium/Enterprise Tier)
+# =====================================================================
+try:
+    print("[Anthropic Claude API Called...]")
+    claude_model = ChatAnthropic(
+        api_key=os.getenv("ANTHROPIC_API_KEY"),
+        model_name="claude-3-5-sonnet-20241022"
+    )
+    claude_response = claude_model.invoke(user_prompt)
+    print(f"Claude Answer: {claude_response.content}\n")
+except Exception as e:
+    print(f"Claude Setup Error: {e}\n")
+
+
+# =====================================================================
+#  PROVIDER 5: OPENAI (Standard Commercial Tier)
+# =====================================================================
+try:
+    print("[OpenAI ChatGPT API Called...]")
+    openai_model = ChatOpenAI(
+        api_key=os.getenv("OPENAI_API_KEY"),
+        model_name="gpt-4o-mini"
+    )
+    openai_response = openai_model.invoke(user_prompt)
+    print(f"OpenAI Answer: {openai_response.content}\n")
+except Exception as e:
+    print(f"OpenAI Setup Error: {e}\n")
+
+print("--- MULTI-PROVIDER EXECUTION FINISHED ---")
